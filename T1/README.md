@@ -7,7 +7,7 @@ Unidade 01, projeto com NLP, NER, Web Scraping e Teoria dos Grafos.
 
 ## 1. Integrantes
 
-- Lucas Spinola (individual)
+- Lucas Augusto Spinola Pinto
 
 ## 2. Link do vídeo (Loom)
 

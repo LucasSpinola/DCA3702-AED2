@@ -279,7 +279,7 @@ def gerar(
     </section>
 </main>
 <footer>
-    Lucas Spinola - UFRN - DCA3702 - 2026
+    Lucas Augusto Spinola Pinto - UFRN - DCA3702 - 2026
 </footer>
 </body>
 </html>

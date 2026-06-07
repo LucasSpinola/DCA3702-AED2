@@ -14,4 +14,4 @@ Cada pasta de trabalho contém seu próprio `README.md` com a descrição comple
 
 ## Autor
 
-Lucas Spinola — UFRN
+Lucas Augusto Spinola Pinto - UFRN
