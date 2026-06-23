@@ -14,8 +14,8 @@ Unidade 03, projeto final.
 
 ## 2. Link do dashboard online
 
-- Dashboard consolidado: https://lucasspinola.github.io/DCA3702---AED2/T3/results/index.html
-- Mapa interativo com folium: https://lucasspinola.github.io/DCA3702---AED2/T3/results/rota_interativa.html
+- Dashboard consolidado: https://lucasspinola.github.io/DCA3702-AED2/T3/results/index.html
+- Mapa interativo com folium: https://lucasspinola.github.io/DCA3702-AED2/T3/results/rota_interativa.html
 
 ---
 
