@@ -16,8 +16,8 @@ Unidade 01, projeto com NLP, NER, Web Scraping e Teoria dos Grafos.
 
 ## 2.1. Dashboard online (GitHub Pages)
 
-- Dashboard consolidado: https://lucasspinola.github.io/DCA3702---AED2/T1/results/index.html
-- Grafo interativo (PyVis): https://lucasspinola.github.io/DCA3702---AED2/T1/results/grafo_interativo.html
+- Dashboard consolidado: https://lucasspinola.github.io/DCA3702-AED2/T1/results/index.html
+- Grafo interativo (PyVis): https://lucasspinola.github.io/DCA3702-AED2/T1/results/grafo_interativo.html
 
 ---
 
