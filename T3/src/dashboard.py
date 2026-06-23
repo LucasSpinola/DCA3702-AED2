@@ -41,9 +41,9 @@ footer{text-align:center;padding:20px;color:#888;font-size:.85rem;border-top:1px
 
 INTEGRANTES_DEFAULT = (
     "Lucas Augusto Spinola Pinto",
-    "Membro 2 (a definir)",
-    "Membro 3 (a definir)",
-    "Membro 4 (a definir)",
+    "Joao Pedro Araujo Ramalho",
+    "Kiev Luiz Freitas Guedes",
+    "Maria Eduarda Silva da Costa",
 )
 
 
