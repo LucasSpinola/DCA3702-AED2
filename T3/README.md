@@ -1,4 +1,4 @@
-# Trabalho 3 (Projeto Final): RideSmart
+# Trabalho 3: RideSmart
 
 Disciplina: DCA3702, Algoritmos e Estrutura de Dados II (UFRN).
 Unidade 03, projeto final.
