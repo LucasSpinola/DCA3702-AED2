@@ -28,7 +28,7 @@ A -> P  caminhando
 P -> B  de carro
 ```
 
-A pergunta de pesquisa é se vale a pena caminhar alguns metros para pegar o transporte em uma via mais rápida, ou se é melhor embarcar exatamente onde estamos. Para responder, o aluno precisa modelar o problema como grafo, definir pesos coerentes, comparar algoritmos de caminhos mínimos e analisar criticamente os resultados.
+A pergunta de pesquisa é achar o melhor caminho entre A e B, sob diversas perspectivas de objetivo. Para responder, precisa-se modelar o problema como grafo, definir pesos coerentes, comparar algoritmos de caminhos mínimos e analisar criticamente os resultados.
 
 **Cenário escolhido:**
 - Origem A: Setor de Aulas IV (UFRN, Lagoa Nova, Natal/RN).
