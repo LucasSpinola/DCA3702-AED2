@@ -1,10 +1,10 @@
 """
-Transito sintetico para o grafo do RideSmart.
+Trânsito sintético para o grafo do RideSmart.
 
 Multiplica o `travel_time` de cada aresta por um fator que depende do tipo
-da via. A ideia e simular um cenario de congestionamento realista:
+da via. A ideia e simular um cenário de congestionamento realista:
     - Avenidas e rodovias urbanas ficam muito mais lentas no horario de pico.
-    - Vias secundarias engasgam menos.
+    - Vias secundárias engasgam menos.
     - Ruas residenciais mantem velocidade quase nominal.
 
 Usa seed fixa para garantir reproducibilidade.
@@ -42,12 +42,12 @@ def aplicar_transito_sintetico(
     seed: int = 42,
 ) -> nx.MultiDiGraph:
     """
-    Aplica fator de transito sintetico em `travel_time_synth` (novo atributo).
+    Aplica fator de trânsito sintético em `travel_time_synth` (novo atributo).
 
     Cada aresta recebe um fator amostrado uniformemente na faixa correspondente
-    ao seu `highway_norm`. Fatores sao sampleados uma vez por aresta (estaveis).
+    ao seu `highway_norm`. Fatores são sampleados uma vez por aresta (estáveis).
 
-    Tambem grava `traffic_factor` para inspecao.
+    Também grava `traffic_factor` para inspeção.
     """
     rng = random.Random(seed)
     for _, _, data in G_drive.edges(data=True):
@@ -61,7 +61,7 @@ def aplicar_transito_sintetico(
 
 
 def resumo_transito(G_drive: nx.MultiDiGraph) -> dict[str, Any]:
-    """Estatisticas rapidas sobre o fator de transito aplicado."""
+    """Estatísticas rápidas sobre o fator de trânsito aplicado."""
     from collections import defaultdict
     soma = defaultdict(float)
     cont = defaultdict(int)

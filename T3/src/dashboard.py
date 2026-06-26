@@ -1,7 +1,7 @@
 """
 Gera o dashboard HTML autossuficiente do RideSmart.
 
-Imagens em base64, sem dependencia externa.
+Imagens em base64, sem dependência externa.
 """
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ footer{text-align:center;padding:20px;color:#888;font-size:.85rem;border-top:1px
 
 INTEGRANTES_DEFAULT = (
     "Lucas Augusto Spinola Pinto",
-    "Joao Pedro Araujo Ramalho",
+    "João Pedro Araújo Ramalho",
     "Kiev Luiz Freitas Guedes",
     "Maria Eduarda Silva da Costa",
 )
@@ -97,32 +97,32 @@ def gerar(
     melhor_sem = resumo.get("melhor_X_sem_transito") or {}
     melhor_com = resumo.get("melhor_X_com_transito") or {}
     cards = "".join([
-        _card(resumo.get("melhor_algoritmo_runtime", "n/d"), "Algoritmo mais rapido"),
-        _card(melhor_sem.get("x_metros", "n/d"), "Melhor X sem transito (m)"),
-        _card(melhor_com.get("x_metros", "n/d"), "Melhor X com transito (m)"),
+        _card(resumo.get("melhor_algoritmo_runtime", "n/d"), "Algoritmo mais rápido"),
+        _card(melhor_sem.get("x_metros", "n/d"), "Melhor X sem trânsito (m)"),
+        _card(melhor_com.get("x_metros", "n/d"), "Melhor X com trânsito (m)"),
         _card(
             f"{(melhor_sem.get('t_total_s', 0) or 0) / 60:.1f} min",
-            "Tempo total sem transito",
+            "Tempo total sem trânsito",
         ),
         _card(
             f"{(melhor_com.get('t_total_s', 0) or 0) / 60:.1f} min",
-            "Tempo total com transito",
+            "Tempo total com trânsito",
         ),
     ])
 
     blocos_fig = []
     if imagens.get("rede"):
-        blocos_fig.append(_figura(_img_b64(imagens["rede"]), "Rede viaria de estudo (UFRN -> Marinha)"))
+        blocos_fig.append(_figura(_img_b64(imagens["rede"]), "Rede viária de estudo (UFRN -> Marinha)"))
     if imagens.get("rotas"):
         blocos_fig.append(_figura(_img_b64(imagens["rotas"]), "Rotas comparadas (custos diferentes)"))
     if imagens.get("candidatos"):
         blocos_fig.append(_figura(_img_b64(imagens["candidatos"]), "Candidatos a ponto de embarque P"))
     if imagens.get("tempo_x"):
-        blocos_fig.append(_figura(_img_b64(imagens["tempo_x"]), "Tempo total vs X (com e sem transito)"))
+        blocos_fig.append(_figura(_img_b64(imagens["tempo_x"]), "Tempo total vs X (com e sem trânsito)"))
     if imagens.get("nodes"):
         blocos_fig.append(_figura(_img_b64(imagens["nodes"]), "Nos expandidos por algoritmo"))
     if imagens.get("runtime"):
-        blocos_fig.append(_figura(_img_b64(imagens["runtime"]), "Tempo de execucao por algoritmo"))
+        blocos_fig.append(_figura(_img_b64(imagens["runtime"]), "Tempo de execução por algoritmo"))
     figuras = "".join(blocos_fig)
 
     integrantes_html = "<ul>" + "".join(
@@ -133,7 +133,7 @@ def gerar(
         f'<iframe src="{html_lib.escape(iframe_mapa)}" '
         f'style="width:100%;height:600px;border:1px solid var(--borda);border-radius:6px"'
         f'></iframe>'
-        if iframe_mapa else "<p><em>Mapa interativo nao disponivel.</em></p>"
+        if iframe_mapa else "<p><em>Mapa interativo não disponível.</em></p>"
     )
 
     html = f"""<!DOCTYPE html>

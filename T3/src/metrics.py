@@ -1,10 +1,10 @@
 """
-Metricas, comparacoes e exportacoes.
+Metricas, comparações e exportações.
 
-Funcoes:
+Funções:
     comparar_algoritmos    : roda os 4 algoritmos no mesmo par (source, target)
-                             e tabula custo, tempo de execucao e nos expandidos.
-    tabela_sweep_x         : converte a saida de `sweep_x` em DataFrame.
+                             e tabula custo, tempo de execução e nós expandidos.
+    tabela_sweep_x         : converte a saída de `sweep_x` em DataFrame.
     salvar_csv             : helper para exportar DataFrame em CSV UTF-8.
     salvar_metricas_json   : helper para exportar dict em JSON UTF-8.
 """
@@ -47,7 +47,7 @@ def tabela_sweep_x(
     cenario: str,
 ) -> pd.DataFrame:
     """
-    Converte a saida de `sweep_x` em DataFrame com coluna `cenario`.
+    Converte a saída de `sweep_x` em DataFrame com coluna `cenário`.
     """
     linhas = []
     for r in sweep_resultados:
@@ -73,7 +73,7 @@ def tabela_sweep_x(
 def ganho_caminhada(df_sweep: pd.DataFrame) -> pd.DataFrame:
     """
     Anexa colunas com ganho percentual em tempo total versus X=0
-    para cada cenario presente no DataFrame.
+    para cada cenário presente no DataFrame.
     """
     df = df_sweep.copy()
     if "t_total_s" not in df.columns:
@@ -108,7 +108,7 @@ def resumo_geral(
     df_sweep_com: pd.DataFrame,
     transito_resumo: dict[str, Any],
 ) -> dict[str, Any]:
-    """Agrega tudo num dicionario para o dashboard / metricas.json."""
+    """Agrega tudo num dicionário para o dashboard / metricas.json."""
     melhor_alg = df_alg.sort_values("elapsed_ms").iloc[0]["algoritmo"] if not df_alg.empty else None
     melhor_x_sem = (
         df_sweep_sem.sort_values("t_total_s").iloc[0].to_dict()

@@ -1,14 +1,14 @@
 """
-Construcao da rede viaria para o RideSmart.
+Construção da rede viária para o RideSmart.
 
-Sao baixados dois grafos da regiao de estudo via OSMnx:
+São baixados dois grafos da região de estudo via OSMnx:
     G_drive : tipo 'drive' (vias para carro), usado no trecho P -> B.
     G_walk  : tipo 'walk'  (incluindo pedestre), usado no trecho A -> P.
 
-Cada aresta de G_drive recebe tres atributos de peso:
+Cada aresta de G_drive recebe três atributos de peso:
     length      : metros (peso original do OSMnx).
-    travel_time : segundos sem transito (length / speed_kph * 3.6).
-    travel_time_synth : segundos com transito sintetico (ver traffic.py).
+    travel_time : segundos sem trânsito (length / speed_kph * 3.6).
+    travel_time_synth : segundos com trânsito sintético (ver traffic.py).
 """
 from __future__ import annotations
 
@@ -20,12 +20,12 @@ import networkx as nx
 import osmnx as ox
 
 
-# Coordenadas do cenario UFRN -> Marinha
+# Coordenadas do cenário UFRN -> Marinha
 COORD_A = (-5.842450, -35.199750)  # Setor de Aulas IV, UFRN
 COORD_B = (-5.770120, -35.197480)  # 3o Distrito Naval, Santos Reis
-# Ponto medio aproximado entre A e B (usado como centro da bbox)
+# Ponto médio aproximado entre A e B (usado como centro da bbox)
 CENTRO = ((COORD_A[0] + COORD_B[0]) / 2, (COORD_A[1] + COORD_B[1]) / 2)
-# Raio para download (cobre A, B e regiao entre eles com folga)
+# Raio para download (cobre A, B e região entre eles com folga)
 RAIO_METROS = 10000
 
 
@@ -35,7 +35,7 @@ def baixar_grafos(
     cache_dir: str | None = None,
 ) -> tuple[nx.MultiDiGraph, nx.MultiDiGraph]:
     """
-    Baixa os grafos 'drive' e 'walk' da regiao.
+    Baixa os grafos 'drive' e 'walk' da região.
 
     Configura o cache do OSMnx em `cache_dir` para evitar re-download.
     """
@@ -53,7 +53,7 @@ def baixar_grafos(
     return G_drive, G_walk
 
 
-# Velocidades padrao (km/h) por tipo de via para preencher `maxspeed` ausente
+# Velocidades padrão (km/h) por tipo de via para preencher `maxspeed` ausente
 _VELOCIDADE_PADRAO_KPH = {
     "motorway": 80, "motorway_link": 60,
     "trunk": 70, "trunk_link": 50,
@@ -96,9 +96,9 @@ def _normalizar_maxspeed(valor: Any) -> float | None:
 def adicionar_pesos(G_drive: nx.MultiDiGraph) -> nx.MultiDiGraph:
     """
     Anexa `length`, `speed_kph` e `travel_time` a cada aresta de `G_drive`.
-    Usa defaults em `_VELOCIDADE_PADRAO_KPH` quando `maxspeed` esta ausente.
+    Usa defaults em `_VELOCIDADE_PADRAO_KPH` quando `maxspeed` está ausente.
 
-    Retorna o proprio `G_drive` modificado in-place.
+    Retorna o próprio `G_drive` modificado in-place.
     """
     for _, _, data in G_drive.edges(data=True):
         tipo = _normalizar_highway(data.get("highway"))
@@ -116,8 +116,8 @@ def adicionar_pesos(G_drive: nx.MultiDiGraph) -> nx.MultiDiGraph:
 
 def adicionar_length_walk(G_walk: nx.MultiDiGraph) -> nx.MultiDiGraph:
     """
-    Garante que cada aresta de `G_walk` tenha `length` (metros) numerico.
-    OSMnx ja entrega length, mas alguns proxies retornam string.
+    Garante que cada aresta de `G_walk` tenha `length` (metros) numérico.
+    OSMnx já entrega length, mas alguns proxies retornam string.
     """
     for _, _, data in G_walk.edges(data=True):
         data["length"] = float(data.get("length", 0.0))
@@ -131,8 +131,8 @@ def encontrar_nos(
     coord_b: tuple[float, float] = COORD_B,
 ) -> dict[str, Any]:
     """
-    Localiza os nos mais proximos de A (em G_walk) e de B (em G_drive).
-    Tambem identifica o no equivalente a A em G_drive (usado quando X=0).
+    Localiza os nós mais próximos de A (em G_walk) e de B (em G_drive).
+    Também identifica o nó equivalente a A em G_drive (usado quando X=0).
     """
     # OSMnx 2.x usa (X, Y) = (longitude, latitude)
     lon_a, lat_a = coord_a[1], coord_a[0]
@@ -152,7 +152,7 @@ def encontrar_nos(
 
 
 def haversine_metros(coord1: tuple[float, float], coord2: tuple[float, float]) -> float:
-    """Distancia geografica entre dois pontos (lat, lon) em metros."""
+    """Distância geográfica entre dois pontos (lat, lon) em metros."""
     R = 6371000.0  # raio da Terra em metros
     lat1, lon1 = math.radians(coord1[0]), math.radians(coord1[1])
     lat2, lon2 = math.radians(coord2[0]), math.radians(coord2[1])

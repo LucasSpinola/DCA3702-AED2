@@ -2,10 +2,10 @@
 Pipeline RideSmart.
 
 Dado (A, B, X):
-    1. Em G_walk, encontra todos os nos `P` a distancia <= X metros de A.
+    1. Em G_walk, encontra todos os nós `P` a distância <= X metros de A.
     2. Para cada P candidato:
-        - tempo a pe (5 km/h) de A ate P.
-        - tempo de carro de P ate B, usando o algoritmo escolhido.
+        - tempo a pé (5 km/h) de A até P.
+        - tempo de carro de P até B, usando o algoritmo escolhido.
     3. Escolhe o P* que minimiza o tempo total.
 
 Realiza o sweep em X = [0, 200, 500, 800, 1000] m.
@@ -30,7 +30,7 @@ def _no_walk_para_drive(
     G_walk: nx.MultiDiGraph,
     no_walk: Any,
 ) -> Any:
-    """Para um no de G_walk, retorna o no mais proximo em G_drive."""
+    """Para um nó de G_walk, retorna o nó mais próximo em G_drive."""
     lat = float(G_walk.nodes[no_walk]["y"])
     lon = float(G_walk.nodes[no_walk]["x"])
     return ox.distance.nearest_nodes(G_drive, X=lon, Y=lat)
@@ -42,10 +42,10 @@ def candidatos_p(
     x_metros: float,
 ) -> dict[Any, float]:
     """
-    Retorna dict {no_walk: distancia_em_metros} para todos os nos
-    alcancaveis em ate `x_metros` a partir de `no_a_walk` em G_walk.
+    Retorna dict {no_walk: distancia_em_metros} para todos os nós
+    alcançáveis em até `x_metros` a partir de `no_a_walk` em G_walk.
 
-    Usa Dijkstra single-source do NetworkX (rapido em C).
+    Usa Dijkstra single-source do NetworkX (rápido em C).
     """
     if x_metros <= 0:
         return {no_a_walk: 0.0}
@@ -66,25 +66,25 @@ def escolher_melhor_p(
     max_candidatos: int = 20,
 ) -> dict[str, Any]:
     """
-    Encontra o melhor ponto de embarque P para o cenario (A, B, X).
+    Encontra o melhor ponto de embarque P para o cenário (A, B, X).
 
-    Estrategia:
+    Estratégia:
       - Pega candidatos P em G_walk (dist <= X).
       - Se houver muitos, mantem apenas os `max_candidatos` mais distantes de A
         (mais distantes = mais economia potencial em tempo de carro).
       - Para cada candidato, projeta para G_drive e roda o algoritmo escolhido.
       - Compara tempo total: t_walk(A,P) + t_drive(P,B).
 
-    Retorna dict com o melhor P, tempo a pe, tempo de carro, tempo total,
-    distancia total e o caminho de carro escolhido.
+    Retorna dict com o melhor P, tempo a pé, tempo de carro, tempo total,
+    distância total e o caminho de carro escolhido.
     """
     cand = candidatos_p(G_walk, no_a_walk, x_metros)
     if not cand:
         return {"erro": "sem candidatos P", "x": x_metros}
 
-    # Reduz candidatos para nao explodir o custo (caminhos > 0; com X=0 fica so um)
+    # Reduz candidatos para não explodir o custo (caminhos > 0; com X=0 fica só um)
     if len(cand) > max_candidatos:
-        # Pega o no A + os (max_candidatos - 1) mais distantes
+        # Pega o nó A + os (max_candidatos - 1) mais distantes
         sorted_cand = sorted(cand.items(), key=lambda kv: -kv[1])
         topo = dict(sorted_cand[: max_candidatos - 1])
         topo[no_a_walk] = 0.0
@@ -123,7 +123,7 @@ def escolher_melhor_p(
         }
         if melhor is None or t_total < melhor["t_total_s"]:
             melhor = cand_info
-    return melhor or {"erro": "nenhum caminho viavel"}
+    return melhor or {"erro": "nenhum caminho viável"}
 
 
 def _distancia_caminho(G: nx.MultiDiGraph, caminho: list) -> float:

@@ -267,12 +267,12 @@ T3/
 │   └── cache/                    (cache do OSMnx, gitignored)
 ├── src/
 │   ├── graph.py                  (download da rede + pesos)
-│   ├── traffic.py                (transito sintetico por tipo de via)
+│   ├── traffic.py                (trânsito sintético por tipo de via)
 │   ├── algorithms.py             (Dijkstra simples, Heap, A*, Bidirecional)
 │   ├── ridesmart.py              (pipeline RideSmart com sweep em X)
-│   ├── metrics.py                (medicoes e exportacoes)
+│   ├── metrics.py                (medições e exportações)
 │   ├── visualization.py          (matplotlib + folium)
-│   └── dashboard.py              (HTML estatico autossuficiente)
+│   └── dashboard.py              (HTML estático autossuficiente)
 ├── notebooks/
 │   └── analise_ridesmart.ipynb   (pipeline orquestrado)
 ├── imagens/                       (6 PNGs)

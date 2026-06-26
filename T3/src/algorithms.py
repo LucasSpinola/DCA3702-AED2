@@ -1,15 +1,15 @@
 """
-Implementacoes proprias de algoritmos de caminho minimo.
+Implementações próprias de algoritmos de caminho mínimo.
 
-Quatro funcoes com a mesma assinatura:
+Quatro funções com a mesma assinatura:
     func(G, source, target, weight='travel_time')
     -> dict com chaves {path, cost, nodes_expanded, elapsed_ms, alg}
 
 Implementadas:
     1. dijkstra_simples (busca linear, O(V^2))
     2. dijkstra_heap    (heapq, O(E log V))
-    3. a_star           (heuristica geografica admissivel)
-    4. dijkstra_bidirecional (busca simultanea de origem e destino)
+    3. a_star           (heurística geográfica admissível)
+    4. dijkstra_bidirecional (busca simultânea de origem e destino)
 """
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ def _multi_min_weight(G: nx.MultiDiGraph, u: Any, v: Any, weight: str) -> float:
 
 
 def _reconstruir_caminho(predecessor: dict, target: Any) -> list:
-    """Refaz o caminho a partir do dicionario de predecessores."""
+    """Refaz o caminho a partir do dicionário de predecessores."""
     caminho = []
     no = target
     while no is not None:
@@ -53,8 +53,8 @@ def dijkstra_simples(
     weight: str = "travel_time",
 ) -> dict[str, Any]:
     """
-    Dijkstra com busca linear (sem heap). Mantido para comparacao.
-    Complexidade O(V^2). Funciona, mas e o mais lento dos quatro.
+    Dijkstra com busca linear (sem heap). Mantido para comparação.
+    Complexidade O(V^2). Funciona, mas é o mais lento dos quatro.
     """
     t0 = time.perf_counter()
     dist: dict[Any, float] = {n: INF for n in G.nodes()}
@@ -64,7 +64,7 @@ def dijkstra_simples(
     nodes_expanded = 0
 
     while True:
-        # Acha o no nao visitado com menor distancia
+        # Acha o nó não visitado com menor distância
         no_atual = None
         menor = INF
         for n in G.nodes():
@@ -141,7 +141,7 @@ def dijkstra_heap(
 
 
 # ------------------------------------------------------------
-# 3. A* com heuristica geografica (Haversine)
+# 3. A* com heurística geográfica (Haversine)
 # ------------------------------------------------------------
 def _haversine_segundos(
     coord_u: tuple[float, float],
@@ -149,8 +149,8 @@ def _haversine_segundos(
     vmax_kph: float,
 ) -> float:
     """
-    Distancia Haversine em metros, convertida em segundos pela velocidade
-    maxima do grafo. Heuristica admissivel para tempo de viagem.
+    Distância Haversine em metros, convertida em segundos pela velocidade
+    máxima do grafo. Heurística admissível para tempo de viagem.
     """
     R = 6371000.0
     lat1, lon1 = math.radians(coord_u[0]), math.radians(coord_u[1])
@@ -169,8 +169,8 @@ def a_star(
     weight: str = "travel_time",
 ) -> dict[str, Any]:
     """
-    A* com heuristica de Haversine convertida para segundos pela vmax do grafo.
-    Heuristica admissivel (nao superestima) garante otimalidade.
+    A* com heurística de Haversine convertida para segundos pela vmax do grafo.
+    Heurística admissível (não superestima) garante otimalidade.
     """
     t0 = time.perf_counter()
     # vmax = maior speed_kph no grafo (limite superior para tempo de viagem)
@@ -230,11 +230,11 @@ def dijkstra_bidirecional(
     weight: str = "travel_time",
 ) -> dict[str, Any]:
     """
-    Dijkstra bidirecional: avanca uma busca a partir de `source` e outra
+    Dijkstra bidirecional: avança uma busca a partir de `source` e outra
     no grafo reverso a partir de `target`. Para quando o melhor candidato
-    nao pode mais ser melhorado pela soma das duas distancias.
+    não pode mais ser melhorado pela soma das duas distâncias.
 
-    Em redes viarias grandes, costuma expandir cerca de metade dos nos
+    Em redes viárias grandes, costuma expandir cerca de metade dos nós
     que o Dijkstra unidirecional.
     """
     t0 = time.perf_counter()
@@ -288,7 +288,7 @@ def dijkstra_bidirecional(
         return d_u
 
     while fila_f or fila_b:
-        # Criterio de parada: top das duas filas somados >= melhor encontrado
+        # Critério de parada: top das duas filas somados >= melhor encontrado
         top_f = fila_f[0][0] if fila_f else INF
         top_b = fila_b[0][0] if fila_b else INF
         if top_f + top_b >= melhor:
@@ -307,7 +307,7 @@ def dijkstra_bidirecional(
     # Caminho: source -> ... -> no_meio (forward) + no_meio -> ... -> target (backward)
     cam_f = _reconstruir_caminho(pred_f, no_meio)
     cam_b = _reconstruir_caminho(pred_b, no_meio)
-    # cam_b sai de target chegando em no_meio; precisa inverter (excluindo no_meio que ja esta em cam_f)
+    # cam_b sai de target chegando em no_meio; precisa inverter (excluindo no_meio que já está em cam_f)
     cam_b_invertido = list(reversed(cam_b[:-1])) if len(cam_b) > 1 else []
     caminho = cam_f + cam_b_invertido
     return {
