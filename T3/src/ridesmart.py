@@ -54,6 +54,33 @@ def _drive_para_walk(
     return ox.distance.nearest_nodes(G_walk, X=lon, Y=lat)
 
 
+def _walk_dist_drive_node(
+    G_walk: nx.MultiDiGraph,
+    G_drive: nx.MultiDiGraph,
+    no_a_walk: Any,
+    no_drive: Any,
+) -> tuple[float, Any]:
+    """
+    Distância de caminhada REAL (metros, medida em G_walk) de `no_a_walk` até
+    a via onde `no_drive` se encontra. Projeta `no_drive` na malha de pedestres
+    e calcula o caminho mínimo a pé.
+
+    Usado para o ponto de embarque padrão: como o carro não alcança o interior
+    do campus, existe um trecho a pé inevitável até a via dirigível mais
+    próxima, que nunca deve ser tratado como zero.
+    """
+    q_walk = _drive_para_walk(G_walk, G_drive, no_drive)
+    try:
+        d = nx.shortest_path_length(G_walk, no_a_walk, q_walk, weight="length")
+    except (nx.NetworkXNoPath, nx.NodeNotFound):
+        # Fallback: distância em linha reta entre A e a projeção em G_walk.
+        d = _haversine_m(
+            float(G_walk.nodes[no_a_walk]["y"]), float(G_walk.nodes[no_a_walk]["x"]),
+            float(G_walk.nodes[q_walk]["y"]), float(G_walk.nodes[q_walk]["x"]),
+        )
+    return float(d), q_walk
+
+
 def candidatos_p_drive(
     G_walk: nx.MultiDiGraph,
     G_drive: nx.MultiDiGraph,
@@ -79,25 +106,14 @@ def candidatos_p_drive(
         5. Para nos onde a projecao geografica esta muito longe (> tolerancia),
            descarta porque o motorista nao pegaria onde o pedestre chegou.
 
-    Se x_metros = 0, retorna apenas a projecao de A em G_drive como unico
-    candidato (com d_walk = 0).
+    Se x_metros <= 0, nenhum candidato ALTERNATIVO e retornado. O ponto de
+    embarque padrao (a via mais proxima de A) e adicionado em
+    `escolher_melhor_p`, ja com a caminhada real ate ele.
     """
-    # Caso X = 0: candidato unico = projecao de A para G_drive
+    # Caso X <= 0: o usuario nao aceita caminhar ate um ponto alternativo.
+    # So resta o embarque padrao, tratado em escolher_melhor_p.
     if x_metros <= 0:
-        lat_a = float(G_walk.nodes[no_a_walk]["y"])
-        lon_a = float(G_walk.nodes[no_a_walk]["x"])
-        no_a_drive = ox.distance.nearest_nodes(G_drive, X=lon_a, Y=lat_a)
-        return {
-            no_a_drive: {
-                "d_walk_m": 0.0,
-                "q_walk": no_a_walk,
-                "gap_m": _haversine_m(
-                    lat_a, lon_a,
-                    float(G_drive.nodes[no_a_drive]["y"]),
-                    float(G_drive.nodes[no_a_drive]["x"]),
-                ),
-            }
-        }
+        return {}
 
     # 1. Single-source em G_walk com cutoff folgado
     cutoff = x_metros * margem_busca
@@ -200,15 +216,20 @@ def escolher_melhor_p(
     """
     candidatos = candidatos_p_drive(G_walk, G_drive, no_a_walk, x_metros)
 
-    # Identifica no_a_drive e garante que ele sempre apareca como candidato com
-    # d_walk = 0. Assim, "nao caminhar" sempre e uma opcao avaliada.
+    # Identifica o ponto de embarque padrao (no_a_drive): a via dirigivel mais
+    # proxima de A. Ele e SEMPRE uma opcao, em qualquer X, porque o usuario
+    # precisa chegar a uma rua de qualquer maneira. A caminhada ate ele e a
+    # caminhada minima inevitavel (medida de verdade em G_walk), nunca zero.
     if no_a_drive is None:
         lat_a = float(G_walk.nodes[no_a_walk]["y"])
         lon_a = float(G_walk.nodes[no_a_walk]["x"])
         no_a_drive = ox.distance.nearest_nodes(G_drive, X=lon_a, Y=lat_a)
     if no_a_drive not in candidatos:
+        d_base, q_base = _walk_dist_drive_node(
+            G_walk, G_drive, no_a_walk, no_a_drive,
+        )
         candidatos[no_a_drive] = {
-            "d_walk_m": 0.0, "q_walk": no_a_walk, "gap_m": 0.0,
+            "d_walk_m": d_base, "q_walk": q_base, "gap_m": 0.0,
         }
 
     if not candidatos:
