@@ -55,6 +55,7 @@ def tabela_sweep_x(
             linhas.append({
                 "cenario": cenario, "x_metros": r.get("x"),
                 "erro": r["erro"],
+                "observacao": r.get("observacao", "Erro"),
             })
             continue
         linhas.append({
@@ -66,6 +67,7 @@ def tabela_sweep_x(
             "t_drive_s": float(r["t_drive_s"]),
             "d_total_m": float(r["d_total_m"]),
             "t_total_s": float(r["t_total_s"]),
+            "observacao": r.get("observacao", "OK"),
         })
     return pd.DataFrame(linhas)
 
@@ -110,13 +112,24 @@ def resumo_geral(
 ) -> dict[str, Any]:
     """Agrega tudo num dicionário para o dashboard / metricas.json."""
     melhor_alg = df_alg.sort_values("elapsed_ms").iloc[0]["algoritmo"] if not df_alg.empty else None
+    
+    # Considera apenas as linhas que possuem solução (caminhada > 0)
+    df_sem_sol = df_sweep_sem[df_sweep_sem["d_walk_m"] > 0] if "d_walk_m" in df_sweep_sem.columns else df_sweep_sem
+    df_com_sol = df_sweep_com[df_sweep_com["d_walk_m"] > 0] if "d_walk_m" in df_sweep_com.columns else df_sweep_com
+
+    # Fallback se não houver nenhuma linha com caminhada > 0
+    if df_sem_sol.empty:
+        df_sem_sol = df_sweep_sem
+    if df_com_sol.empty:
+        df_com_sol = df_sweep_com
+
     melhor_x_sem = (
-        df_sweep_sem.sort_values("t_total_s").iloc[0].to_dict()
-        if not df_sweep_sem.empty else None
+        df_sem_sol.sort_values("t_total_s").iloc[0].to_dict()
+        if not df_sem_sol.empty else None
     )
     melhor_x_com = (
-        df_sweep_com.sort_values("t_total_s").iloc[0].to_dict()
-        if not df_sweep_com.empty else None
+        df_com_sol.sort_values("t_total_s").iloc[0].to_dict()
+        if not df_com_sol.empty else None
     )
     return {
         "comparacao_algoritmos": df_alg.to_dict(orient="records"),

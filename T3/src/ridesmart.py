@@ -224,6 +224,10 @@ def escolher_melhor_p(
         lat_a = float(G_walk.nodes[no_a_walk]["y"])
         lon_a = float(G_walk.nodes[no_a_walk]["x"])
         no_a_drive = ox.distance.nearest_nodes(G_drive, X=lon_a, Y=lat_a)
+    # Verifica se existem candidatos a pé viáveis (caminhada <= X) além do ponto inicial (d_walk = 0)
+    outros_candidatos = [k for k in candidatos.keys() if k != no_a_drive]
+    houve_solucao_caminhada = len(outros_candidatos) > 0
+
     if no_a_drive not in candidatos:
         d_base, q_base = _walk_dist_drive_node(
             G_walk, G_drive, no_a_walk, no_a_drive,
@@ -233,7 +237,11 @@ def escolher_melhor_p(
         }
 
     if not candidatos:
-        return {"erro": "sem candidatos P", "x": x_metros}
+        return {
+            "erro": "sem candidatos P",
+            "x": x_metros,
+            "observacao": "Sem candidatos viários viáveis"
+        }
 
     candidatos = _amostrar(candidatos, no_a_drive, max_candidatos)
 
@@ -270,7 +278,25 @@ def escolher_melhor_p(
         }
         if melhor is None or t_total < melhor["t_total_s"]:
             melhor = cand_info
-    return melhor or {"erro": "nenhum caminho viavel"}
+
+    if melhor is None:
+        return {
+            "erro": "nenhum caminho viavel",
+            "x": x_metros,
+            "observacao": "Sem caminho viário viável"
+        }
+
+    # Adiciona a observação sobre a solução para deixar claro no resultado
+    d_walk_m = melhor["d_walk_m"]
+    if d_walk_m > 0:
+        obs = f"Ponto a pé selecionado (caminhada de {d_walk_m:.1f} m)"
+    elif not houve_solucao_caminhada or x_metros <= 0:
+        obs = "Sem candidatos viáveis a pé (caminhada sempre > X)"
+    else:
+        obs = "Permanecer na origem foi mais rápido"
+    
+    melhor["observacao"] = obs
+    return melhor
 
 
 def _distancia_caminho(G: nx.MultiDiGraph, caminho: list) -> float:
