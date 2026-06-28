@@ -79,25 +79,14 @@ def candidatos_p_drive(
         5. Para nos onde a projecao geografica esta muito longe (> tolerancia),
            descarta porque o motorista nao pegaria onde o pedestre chegou.
 
-    Se x_metros = 0, retorna apenas a projecao de A em G_drive como unico
-    candidato (com d_walk = 0).
+    Se x_metros <= 0, nao ha candidato: o usuario nao caminha e A nao coincide
+    com nenhuma via dirigivel (semantica estrita do limite X).
     """
-    # Caso X = 0: candidato unico = projecao de A para G_drive
+    # Semantica estrita: P deve estar a no maximo X metros a pe de A. Para
+    # X <= 0 o usuario nao caminha e, como A esta no interior do campus (sem
+    # via dirigivel no local), nao ha ponto de embarque possivel.
     if x_metros <= 0:
-        lat_a = float(G_walk.nodes[no_a_walk]["y"])
-        lon_a = float(G_walk.nodes[no_a_walk]["x"])
-        no_a_drive = ox.distance.nearest_nodes(G_drive, X=lon_a, Y=lat_a)
-        return {
-            no_a_drive: {
-                "d_walk_m": 0.0,
-                "q_walk": no_a_walk,
-                "gap_m": _haversine_m(
-                    lat_a, lon_a,
-                    float(G_drive.nodes[no_a_drive]["y"]),
-                    float(G_drive.nodes[no_a_drive]["x"]),
-                ),
-            }
-        }
+        return {}
 
     # 1. Single-source em G_walk com cutoff folgado
     cutoff = x_metros * margem_busca
@@ -200,26 +189,20 @@ def escolher_melhor_p(
     """
     candidatos = candidatos_p_drive(G_walk, G_drive, no_a_walk, x_metros)
 
-    # Identifica no_a_drive e garante que ele sempre apareca como candidato com
-    # d_walk = 0. Assim, "nao caminhar" sempre e uma opcao avaliada.
     if no_a_drive is None:
         lat_a = float(G_walk.nodes[no_a_walk]["y"])
         lon_a = float(G_walk.nodes[no_a_walk]["x"])
         no_a_drive = ox.distance.nearest_nodes(G_drive, X=lon_a, Y=lat_a)
-    # Verifica se existem candidatos a pé viáveis (caminhada <= X) além do ponto inicial (d_walk = 0)
-    outros_candidatos = [k for k in candidatos.keys() if k != no_a_drive]
-    houve_solucao_caminhada = len(outros_candidatos) > 0
 
-    if no_a_drive not in candidatos:
-        candidatos[no_a_drive] = {
-            "d_walk_m": 0.0, "q_walk": no_a_walk, "gap_m": 0.0,
-        }
-
+    # Semantica estrita do enunciado: P deve estar a no maximo X metros a pe de
+    # A. Nao injetamos um embarque "padrao" isento do limite X. Se nenhuma via
+    # dirigivel esta ao alcance de X metros, o cenario e inviavel (o usuario
+    # nao alcanca rua alguma sem exceder X).
     if not candidatos:
         return {
             "erro": "sem candidatos P",
             "x": x_metros,
-            "observacao": "Sem candidatos viários viáveis"
+            "observacao": "Inviável: nenhuma via dirigível a até X m de A",
         }
 
     candidatos = _amostrar(candidatos, no_a_drive, max_candidatos)
@@ -262,19 +245,10 @@ def escolher_melhor_p(
         return {
             "erro": "nenhum caminho viavel",
             "x": x_metros,
-            "observacao": "Sem caminho viário viável"
+            "observacao": "Sem caminho viário viável a partir dos candidatos",
         }
 
-    # Adiciona a observação sobre a solução para deixar claro no resultado
-    d_walk_m = melhor["d_walk_m"]
-    if d_walk_m > 0:
-        obs = f"Ponto a pé selecionado (caminhada de {d_walk_m:.1f} m)"
-    elif not houve_solucao_caminhada or x_metros <= 0:
-        obs = "Sem candidatos viáveis a pé (caminhada sempre > X)"
-    else:
-        obs = "Permanecer na origem foi mais rápido"
-    
-    melhor["observacao"] = obs
+    melhor["observacao"] = f"Embarque a {melhor['d_walk_m']:.1f} m a pé de A"
     return melhor
 
 
