@@ -3,68 +3,70 @@
     {
       "algoritmo": "dijkstra_simples",
       "custo_s": 714.3670639533375,
-      "nos_expandidos": 11885,
-      "elapsed_ms": 13012.928499956615,
+      "nos_expandidos": 11887,
+      "elapsed_ms": 24755.57648600079,
       "tamanho_caminho": 113
     },
     {
       "algoritmo": "dijkstra_heap",
       "custo_s": 714.3670639533375,
-      "nos_expandidos": 11886,
-      "elapsed_ms": 35.803499980829656,
+      "nos_expandidos": 11888,
+      "elapsed_ms": 61.16948599810712,
       "tamanho_caminho": 113
     },
     {
       "algoritmo": "a_star",
       "custo_s": 714.3670639533375,
       "nos_expandidos": 4799,
-      "elapsed_ms": 59.5146999694407,
+      "elapsed_ms": 77.8112659972976,
       "tamanho_caminho": 113
     },
     {
       "algoritmo": "dijkstra_bidirecional",
       "custo_s": 714.3670639533376,
-      "nos_expandidos": 5079,
-      "elapsed_ms": 20.565600018016994,
+      "nos_expandidos": 5081,
+      "elapsed_ms": 28.05141499993624,
       "tamanho_caminho": 113
     }
   ],
   "melhor_algoritmo_runtime": "dijkstra_bidirecional",
   "melhor_X_sem_transito": {
     "cenario": "sem_transito",
-    "x_metros": 0.0,
-    "d_walk_m": 0.0,
-    "t_walk_s": 0.0,
-    "d_drive_m": 10614.525571985054,
-    "t_drive_s": 714.3670639533375,
-    "d_total_m": 10614.525571985054,
-    "t_total_s": 714.3670639533375
+    "x_metros": 500.0,
+    "d_walk_m": 239.64146620664127,
+    "t_walk_s": 172.54185566878172,
+    "d_drive_m": 10265.549752375997,
+    "t_drive_s": 688.3678598420951,
+    "d_total_m": 10505.191218582639,
+    "t_total_s": 860.9097155108768,
+    "observacao": "Ponto a pé selecionado (caminhada de 239.6 m)"
   },
   "melhor_X_com_transito": {
     "cenario": "com_transito",
-    "x_metros": 0.0,
-    "d_walk_m": 0.0,
-    "t_walk_s": 0.0,
-    "d_drive_m": 10584.414949348362,
-    "t_drive_s": 1211.8178820083695,
-    "d_total_m": 10584.414949348362,
-    "t_total_s": 1211.8178820083695
+    "x_metros": 500.0,
+    "d_walk_m": 218.24583344090306,
+    "t_walk_s": 157.1370000774502,
+    "d_drive_m": 10946.443209212635,
+    "t_drive_s": 1200.1356689662862,
+    "d_total_m": 11164.68904265354,
+    "t_total_s": 1357.2726690437364,
+    "observacao": "Ponto a pé selecionado (caminhada de 218.2 m)"
   },
   "resumo_transito": {
-    "media_geral": 1.242150427485902,
+    "media_geral": 1.2422448275613358,
     "media_por_tipo": {
-      "trunk_link": 2.0215243938700054,
-      "primary": 2.001666951237359,
-      "trunk": 1.9791550758333232,
-      "primary_link": 1.8196763275730623,
-      "secondary_link": 1.5150454871019816,
-      "secondary": 1.495886838756096,
-      "tertiary_link": 1.3585609621855315,
-      "tertiary": 1.350062399804695,
-      "unclassified": 1.1519788603148011,
-      "residential": 1.150106554818286,
-      "living_street": 1.0961339451962708
+      "trunk_link": 2.008505646476246,
+      "primary": 2.0070101973569705,
+      "trunk": 1.984754086732741,
+      "primary_link": 1.7843553811932857,
+      "secondary_link": 1.5070429784517672,
+      "secondary": 1.4979028138075055,
+      "tertiary": 1.3494552368690518,
+      "tertiary_link": 1.3491980622417046,
+      "residential": 1.1500743503917887,
+      "unclassified": 1.1477207515029844,
+      "living_street": 1.099305985492373
     },
-    "qtd_arestas": 56285
+    "qtd_arestas": 56288
   }
 }
