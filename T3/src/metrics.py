@@ -76,18 +76,26 @@ def ganho_caminhada(df_sweep: pd.DataFrame) -> pd.DataFrame:
     """
     Anexa colunas com ganho percentual em tempo total versus X=0
     para cada cenário presente no DataFrame.
+
+    O baseline de cada cenário é o menor X com solução viável (e não X=0), pois
+    sob a semântica estrita os X menores que o acesso à primeira via podem ser
+    inviáveis. Assim, o ganho mede o efeito de caminhar mais a partir do acesso
+    mínimo possível.
     """
     df = df_sweep.copy()
     if "t_total_s" not in df.columns:
         return df
+    viaveis = df[df["t_total_s"].notna()]
     baselines = (
-        df[df["x_metros"] == 0]
-        .set_index("cenario")["t_total_s"]
+        viaveis.sort_values("x_metros")
+        .groupby("cenario")["t_total_s"]
+        .first()
         .to_dict()
     )
     df["ganho_pct"] = df.apply(
         lambda r: (baselines.get(r["cenario"], r["t_total_s"]) - r["t_total_s"])
-                  / max(baselines.get(r["cenario"], 1.0), 1e-6) * 100.0,
+                  / max(baselines.get(r["cenario"], 1.0), 1e-6) * 100.0
+                  if baselines.get(r["cenario"]) is not None else 0.0,
         axis=1,
     )
     return df
