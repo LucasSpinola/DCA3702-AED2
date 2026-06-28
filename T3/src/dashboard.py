@@ -90,6 +90,8 @@ def gerar(
     iframe_mapa: str | None,
     caminho_saida: str,
     integrantes: tuple[str, ...] = INTEGRANTES_DEFAULT,
+    nome_a: str = "Setor de Aulas IV (UFRN, Lagoa Nova)",
+    nome_b: str = "Comando do 3o Distrito Naval (Santos Reis, Natal/RN)",
 ) -> None:
     """Monta `results/index.html`."""
     os.makedirs(os.path.dirname(caminho_saida) or ".", exist_ok=True)
@@ -112,11 +114,16 @@ def gerar(
 
     blocos_fig = []
     if imagens.get("rede"):
-        blocos_fig.append(_figura(_img_b64(imagens["rede"]), "Rede viária de estudo (UFRN -> Marinha)"))
+        blocos_fig.append(_figura(_img_b64(imagens["rede"]), f"Rede viária de estudo ({nome_a} -> {nome_b})"))
     if imagens.get("rotas"):
         blocos_fig.append(_figura(_img_b64(imagens["rotas"]), "Rotas comparadas (custos diferentes)"))
-    if imagens.get("candidatos"):
-        blocos_fig.append(_figura(_img_b64(imagens["candidatos"]), "Candidatos a ponto de embarque P"))
+    cand_img = imagens.get("candidatos")
+    if cand_img:
+        if isinstance(cand_img, dict):
+            for x_val, path in sorted(cand_img.items()):
+                blocos_fig.append(_figura(_img_b64(path), f"Candidatos a ponto de embarque P (X = {x_val}m)"))
+        else:
+            blocos_fig.append(_figura(_img_b64(cand_img), "Candidatos a ponto de embarque P"))
     if imagens.get("tempo_x"):
         blocos_fig.append(_figura(_img_b64(imagens["tempo_x"]), "Tempo total vs X (com e sem trânsito)"))
     if imagens.get("nodes"):
@@ -156,8 +163,8 @@ def gerar(
 
     <section>
         <h2>2. Resumo</h2>
-        <p>Cenario: <strong>Setor de Aulas IV (UFRN, Lagoa Nova)</strong> ate
-        <strong>Comando do 3o Distrito Naval (Santos Reis, Natal/RN)</strong>.
+        <p>Cenario: <strong>{html_lib.escape(nome_a)}</strong> ate
+        <strong>{html_lib.escape(nome_b)}</strong>.
         O usuario aceita caminhar ate X metros antes de embarcar. O sistema
         escolhe o melhor ponto P combinando o tempo a pe e o tempo de carro.</p>
         <div class="cards">{cards}</div>

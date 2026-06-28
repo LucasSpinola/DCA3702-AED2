@@ -10,9 +10,10 @@ Dado (A, B, X):
 
 Realiza o sweep em X = [0, 200, 500, 800, 1000] m.
 """
+
 from __future__ import annotations
 
-import os
+import random
 from typing import Any, Callable
 
 import networkx as nx
@@ -23,6 +24,7 @@ from .algorithms import dijkstra_heap
 
 # Velocidade de caminhada em km/h
 VELOCIDADE_CAMINHADA_KPH = 5.0
+MAX_CANDIDATOS = 100
 
 
 def _no_walk_para_drive(
@@ -50,9 +52,36 @@ def candidatos_p(
     if x_metros <= 0:
         return {no_a_walk: 0.0}
     distancias = nx.single_source_dijkstra_path_length(
-        G_walk, no_a_walk, cutoff=x_metros, weight="length",
+        G_walk,
+        no_a_walk,
+        cutoff=x_metros,
+        weight="length",
     )
     return distancias
+
+
+def obter_candidatos_filtrados(
+    G_walk: nx.MultiDiGraph,
+    no_a_walk: Any,
+    x_metros: float,
+    max_candidatos: int = MAX_CANDIDATOS,
+) -> dict[Any, float]:
+    """
+    Retorna dict de candidatos filtrados de acordo com o limite de max_candidatos,
+    usando amostragem aleatória se necessário, mas mantendo a origem.
+    """
+    cand = candidatos_p(G_walk, no_a_walk, x_metros)
+    if not cand:
+        return {}
+    if len(cand) > max_candidatos:
+        # Garante a inclusão do ponto de origem A (0.0m de caminhada)
+        outros_candidatos = [(n, dist) for n, dist in cand.items() if n != no_a_walk]
+        rng = random.Random(42)
+        sampled = rng.sample(outros_candidatos, max_candidatos - 1)
+        topo = dict(sampled)
+        topo[no_a_walk] = 0.0
+        return topo
+    return cand
 
 
 def escolher_melhor_p(
@@ -63,32 +92,22 @@ def escolher_melhor_p(
     x_metros: float,
     weight: str = "travel_time",
     algoritmo: Callable = dijkstra_heap,
-    max_candidatos: int = 20,
+    max_candidatos: int = MAX_CANDIDATOS,
 ) -> dict[str, Any]:
     """
     Encontra o melhor ponto de embarque P para o cenário (A, B, X).
 
     Estratégia:
-      - Pega candidatos P em G_walk (dist <= X).
-      - Se houver muitos, mantem apenas os `max_candidatos` mais distantes de A
-        (mais distantes = mais economia potencial em tempo de carro).
+      - Pega candidatos P em G_walk (dist <= X) filtrados por max_candidatos.
       - Para cada candidato, projeta para G_drive e roda o algoritmo escolhido.
       - Compara tempo total: t_walk(A,P) + t_drive(P,B).
 
     Retorna dict com o melhor P, tempo a pé, tempo de carro, tempo total,
     distância total e o caminho de carro escolhido.
     """
-    cand = candidatos_p(G_walk, no_a_walk, x_metros)
+    cand = obter_candidatos_filtrados(G_walk, no_a_walk, x_metros, max_candidatos)
     if not cand:
         return {"erro": "sem candidatos P", "x": x_metros}
-
-    # Reduz candidatos para não explodir o custo (caminhos > 0; com X=0 fica só um)
-    if len(cand) > max_candidatos:
-        # Pega o nó A + os (max_candidatos - 1) mais distantes
-        sorted_cand = sorted(cand.items(), key=lambda kv: -kv[1])
-        topo = dict(sorted_cand[: max_candidatos - 1])
-        topo[no_a_walk] = 0.0
-        cand = topo
 
     melhor: dict[str, Any] | None = None
     for p_walk, d_walk_m in cand.items():
@@ -151,8 +170,13 @@ def sweep_x(
     resultados = []
     for x in valores_x:
         r = escolher_melhor_p(
-            G_drive, G_walk, no_a_walk, no_b_drive, x,
-            weight=weight, algoritmo=algoritmo,
+            G_drive,
+            G_walk,
+            no_a_walk,
+            no_b_drive,
+            x,
+            weight=weight,
+            algoritmo=algoritmo,
         )
         resultados.append(r)
     return resultados

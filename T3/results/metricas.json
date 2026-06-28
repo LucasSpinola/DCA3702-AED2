@@ -3,68 +3,68 @@
     {
       "algoritmo": "dijkstra_simples",
       "custo_s": 714.3670639533375,
-      "nos_expandidos": 11885,
-      "elapsed_ms": 14002.578899962828,
+      "nos_expandidos": 11887,
+      "elapsed_ms": 16984.478059999674,
       "tamanho_caminho": 113
     },
     {
       "algoritmo": "dijkstra_heap",
       "custo_s": 714.3670639533375,
-      "nos_expandidos": 11886,
-      "elapsed_ms": 37.2366999508813,
+      "nos_expandidos": 11888,
+      "elapsed_ms": 43.16968700004509,
       "tamanho_caminho": 113
     },
     {
       "algoritmo": "a_star",
       "custo_s": 714.3670639533375,
       "nos_expandidos": 4799,
-      "elapsed_ms": 51.23049998655915,
+      "elapsed_ms": 54.95273999986239,
       "tamanho_caminho": 113
     },
     {
       "algoritmo": "dijkstra_bidirecional",
       "custo_s": 714.3670639533376,
-      "nos_expandidos": 5079,
-      "elapsed_ms": 19.217100052628666,
+      "nos_expandidos": 5081,
+      "elapsed_ms": 19.20347600025707,
       "tamanho_caminho": 113
     }
   ],
   "melhor_algoritmo_runtime": "dijkstra_bidirecional",
   "melhor_X_sem_transito": {
     "cenario": "sem_transito",
-    "x_metros": 0.0,
-    "d_walk_m": 0.0,
-    "t_walk_s": 0.0,
-    "d_drive_m": 10614.525571985054,
-    "t_drive_s": 714.3670639533375,
-    "d_total_m": 10614.525571985054,
-    "t_total_s": 714.3670639533375
+    "x_metros": 200.0,
+    "d_walk_m": 24.780417434434426,
+    "t_walk_s": 17.841900552792787,
+    "d_drive_m": 10369.207689771461,
+    "t_drive_s": 677.3036468578005,
+    "d_total_m": 10393.988107205896,
+    "t_total_s": 695.1455474105933
   },
   "melhor_X_com_transito": {
     "cenario": "com_transito",
     "x_metros": 0.0,
     "d_walk_m": 0.0,
     "t_walk_s": 0.0,
-    "d_drive_m": 10584.414949348362,
-    "t_drive_s": 1211.8178820083695,
-    "d_total_m": 10584.414949348362,
-    "t_total_s": 1211.8178820083695
+    "d_drive_m": 10946.443209212635,
+    "t_drive_s": 1200.1356689662862,
+    "d_total_m": 10946.443209212635,
+    "t_total_s": 1200.1356689662862
   },
   "resumo_transito": {
-    "media_geral": 1.2421468131302418,
+    "media_geral": 1.242205618642896,
     "media_por_tipo": {
-      "trunk_link": 2.0178008972915857,
-      "primary": 2.0018359963131878,
-      "trunk": 1.9791550758333232,
-      "primary_link": 1.8196763275730623,
-      "secondary_link": 1.5143420892055013,
-      "secondary": 1.495909062828433,
-      "tertiary_link": 1.3585609621855315,
-      "tertiary": 1.350062399804695,
-      "unclassified": 1.1515954607874463,
-      "residential": 1.1501103427586656,
-      "living_street": 1.0962143924355703
+      "trunk_link": 2.008971281307325,
+      "primary": 2.0070619364777245,
+      "trunk": 1.984754086732741,
+      "primary_link": 1.7843553811932857,
+      "secondary_link": 1.5053362857617434,
+      "secondary": 1.4979252538804335,
+      "tertiary": 1.3494514988002095,
+      "tertiary_link": 1.3491980622417046,
+      "residential": 1.1500745132100672,
+      "unclassified": 1.1477207515029844,
+      "living_street": 1.0995305954932442
     },
-    "qtd_arestas": 56285
+    "qtd_arestas": 56288
   }
 }

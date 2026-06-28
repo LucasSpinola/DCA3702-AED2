@@ -10,6 +10,7 @@ Cada aresta de G_drive recebe três atributos de peso:
     travel_time : segundos sem trânsito (length / speed_kph * 3.6).
     travel_time_synth : segundos com trânsito sintético (ver traffic.py).
 """
+
 from __future__ import annotations
 
 import math
@@ -55,13 +56,20 @@ def baixar_grafos(
 
 # Velocidades padrão (km/h) por tipo de via para preencher `maxspeed` ausente
 _VELOCIDADE_PADRAO_KPH = {
-    "motorway": 80, "motorway_link": 60,
-    "trunk": 70, "trunk_link": 50,
-    "primary": 60, "primary_link": 50,
-    "secondary": 50, "secondary_link": 40,
-    "tertiary": 40, "tertiary_link": 30,
-    "residential": 30, "living_street": 20,
-    "unclassified": 30, "service": 20,
+    "motorway": 80,
+    "motorway_link": 60,
+    "trunk": 70,
+    "trunk_link": 50,
+    "primary": 60,
+    "primary_link": 50,
+    "secondary": 50,
+    "secondary_link": 40,
+    "tertiary": 40,
+    "tertiary_link": 30,
+    "residential": 30,
+    "living_street": 20,
+    "unclassified": 30,
+    "service": 20,
     "road": 30,
 }
 
@@ -158,7 +166,10 @@ def haversine_metros(coord1: tuple[float, float], coord2: tuple[float, float]) -
     lat2, lon2 = math.radians(coord2[0]), math.radians(coord2[1])
     dlat = lat2 - lat1
     dlon = lon2 - lon1
-    a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    )
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
 
