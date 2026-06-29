@@ -5,12 +5,14 @@ Unidade 03, projeto final.
 
 ---
 
-## 1. Integrantes
+## 1. Integrantes e contribuições
 
-- Lucas Augusto Spinola Pinto
-- João Pedro Araújo Ramalho
-- Kiev Luiz Freitas Guedes
-- Maria Eduarda Silva da Costa
+| Nome | Contribuição |
+| :--- | :--- |
+| **João Pedro Araújo Ramalho** | Implementação dos algoritmos de busca e elaboração do relatório. |
+| **Kiev Luiz Freitas Guedes** | Análise crítica dos resultados, apoio nas visualizações e elaboração do relatório. |
+| **Lucas Augusto Spinola Pinto** | Modelagem do problema, desenvolvimento das visualizações e elaboração do relatório. |
+| **Maria Eduarda Silva da Costa** | Condução dos experimentos, apoio na modelagem e elaboração do relatório. |
 
 ## 2. Documentação e Resultados
 - [Relatório Final (PDF)](results/AED2___Trabalho_3.pdf)
