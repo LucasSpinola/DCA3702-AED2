@@ -13,7 +13,7 @@ Unidade 03, projeto final.
 - Maria Eduarda Silva da Costa
 
 ## 2. Documentação e Resultados
-- [Relatório Final (PDF)](AED2___Trabalho_3.pdf)
+- [Relatório Final (PDF)](results/AED2___Trabalho_3.pdf)
 - [Dashboard consolidado](https://lucasspinola.github.io/DCA3702-AED2/T3/results/index.html)
 - [Mapa interativo com folium](https://lucasspinola.github.io/DCA3702-AED2/T3/results/rota_interativa.html)
 
