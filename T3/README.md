@@ -33,7 +33,7 @@ A pergunta de pesquisa é achar o melhor caminho entre A e B, sob diversas persp
 **Cenário escolhido:**
 - Origem A: Setor de Aulas IV (UFRN, Lagoa Nova, Natal/RN).
 - Destino B: Comando do 3o Distrito Naval (R. Cel. Flamínio, s/n, Santos Reis, Natal/RN, 59010-500).
-- Distância máxima X: sweep em [0, 200, 500, 800, 1000] metros.
+- Distância máxima X: sweep em [220, 240, 300, 500, 1000] metros.
 
 ---
 
@@ -67,11 +67,14 @@ Em `G_drive`, cada aresta recebe três atributos de peso:
 
 Para simular um cenário de congestionamento realista, cada aresta recebe um fator multiplicativo amostrado de uma distribuição uniforme cuja faixa depende do `highway`:
 
-| Tipo de via | Faixa do fator |
-| --- | --- |
-| motorway, trunk, primary | 1,5 a 2,5 |
-| secondary, tertiary | 1,2 a 1,8 |
-| residential, unclassified | 1,0 a 1,3 |
+| Tipo de via                               | Faixa do fator |
+| ----------------------------------------- | -------------: |
+| `motorway`, `trunk`,`primary` | 1,5 a 2,5 |
+| `primary_link`                            | 1,4 a 2,2      |
+| `secondary`, `secondary_link`             | 1,2 a 1,8      |
+| `tertiary`, `tertiary_link`               | 1,1 a 1,6      |
+| `residential`, `unclassified`, `road`     | 1,0 a 1,3      |
+| `living_street`, `service`                | 1,0 a 1,2      |
 
 Avenidas e rodovias urbanas, que tendem a engarrafar primeiro, recebem fatores mais altos. Ruas residenciais mantêm velocidade próxima da nominal. A seed do gerador aleatório é fixa (`seed=42`) para garantir reprodutibilidade.
 
@@ -85,7 +88,9 @@ Dado o par `(A, B)` e um valor `X`:
    - Filtrar nós de `G_drive` em uma bounding box ao redor de A.
    - Para cada nó de `G_drive` candidato, achar o nó q em `G_walk` mais próximo geograficamente. Se a distância de A até q em `G_walk` é menor ou igual a X, esse P é um candidato. O `gap` entre P e q é registrado.
    - Descartar candidatos com `gap` maior que a tolerância (200 m): nesses casos, o ponto onde o motorista pega ficaria longe demais do ponto até onde o usuário caminhou.
-   - Garantir que `no_a_drive` (projeção de A em `G_drive`) sempre apareça como candidato, com `d_walk = 0`. Isso representa a opção "não caminhar".
+
+   > **Nota:** Devido à classificação do OSMnx, as vias internas da UFRN não são contabilizadas em `G_drive`. O nó veicular válido mais próximo da origem fica a aproximadamente 218 m a pé, tornando a caminhada um pré-requisito obrigatório neste cenário.
+
 3. Para cada candidato P:
    - Tempo a pé: `t_walk = d_walk / 5 km/h`, onde `d_walk` é a distância real em `G_walk` até a posição de P.
    - Tempo de carro: rodar o algoritmo escolhido de P até `no_b_drive` em `G_drive` (peso `travel_time` ou `travel_time_synth`).
@@ -143,24 +148,23 @@ Usando `travel_time_synth` (peso multiplicado pelo fator de trânsito):
 
 ### 6.3 Sweep em X (RideSmart)
 
-Importante: os candidatos P são nós da rede de carros (`G_drive`), e a distância de caminhada é calculada em `G_walk` exatamente até a posição geográfica de cada P. Isso garante que **o ponto até onde o usuário caminha é o mesmo ponto onde o motorista embarca**, sem descasamento entre as duas redes.
+Importante: Devido à restrição da malha veicular do OSMnx dentro do campus da UFRN, a via dirigível mais próxima fica a aproximadamente 218 metros a pé (acesso à BR-101). Portanto, sob uma semântica estrita, não há embarque viável para X < 218 m.
 
-| X (m) | Cenário | d_walk (m) | t_total (s) | Ganho percentual |
-| ---: | --- | ---: | ---: | ---: |
-| 0 | sem trânsito | 0 | 714,4 | 0,00 |
-| 200 | sem trânsito | 0 | 714,4 | 0,00 |
-| 500 | sem trânsito | 239,6 | 860,9 | -20,51 |
-| 800 | sem trânsito | 239,6 | 860,9 | -20,51 |
-| 1000 | sem trânsito | 239,6 | 860,9 | -20,51 |
-| 0 | com trânsito | 0 | 1.211,8 | 0,00 |
-| 200 | com trânsito | 0 | 1.211,8 | 0,00 |
-| 500 | com trânsito | 239,6 | 1.367,8 | -12,87 |
-| 800 | com trânsito | 239,6 | 1.367,8 | -12,87 |
-| 1000 | com trânsito | 239,6 | 1.367,8 | -12,87 |
+| X (m) | Cenário | t_total (s) |
+| ---: | --- | ---: |
+| 220 | sem trânsito | 871,5 |
+| 240 | sem trânsito | 860,9 |
+| 300 | sem trânsito | 860,9 |
+| 500 | sem trânsito | 860,9 |
+| 1000| sem trânsito | 860,9 |
+| 220 | com trânsito | 1.357,3 |
+| 240 | com trânsito | 1.357,3 |
+| 300 | com trânsito | 1.357,3 |
+| 500 | com trânsito | 1.357,3 |
+| 1000| com trânsito | 1.357,3 |
 
-Resultado: para esse cenário específico, caminhar **piorou** o tempo total em todos os X testados onde o sistema decidiu caminhar. Em X = 200 m o algoritmo escolheu não andar (mantém o melhor P = no_a_drive, d_walk = 0). Em X = 500 m e acima, o algoritmo encontrou um P a 240 m de caminhada que economiza 26 s no carro, mas custa 173 s a pé. Saldo negativo: a rota total ficou 20 % mais lenta sem trânsito e 13 % com trânsito.
+Quanto aos resultados obtidos, observou-se que, para um limiar de caminhada $X = 220$ m, apenas o acesso direto à BR-101 apresenta-se como opção viável. A partir de $X = 240$ m, o sistema identifica um ponto de embarque alternativo, localizado a $239{,}6$ m da origem, cuja aplicação resulta em uma redução marginal de $1{,}2\%$ no tempo total de viagem sob condições de tráfego ideal (de $871{,}5$ s para $860{,}9$ s). Nota-se, contudo, a formação de um platô para distâncias superiores a $240$ m; o incremento no raio de caminhada não acarreta ganhos adicionais, visto que a topologia da rede converge para o mesmo corredor viário principal. Sob a incidência de tráfego sintético, tal rampa sofre uma saturação superior às demais vias, tornando o acesso original (situado a $218$ m) a alternativa tecnicamente mais eficiente, com um tempo total de $1.357{,}3$ s.
 
-A explicação é direta. O Setor de Aulas IV (UFRN) está colado na BR-101 e na Avenida Senador Salgado Filho, que são as vias mais rápidas da região. O nó projetado de A em `G_drive` cai em uma via principal. Qualquer P alternativo dentro de 1 km de caminhada cai em vias secundárias ou residenciais mais lentas, e o tempo de carro economizado não compensa o tempo a pé gasto até lá.
 
 ### 6.4 Imagens geradas
 
@@ -209,11 +213,11 @@ O tempo total subiu cerca de 70%, de 714 segundos para 1.212 segundos. O caminho
 
 ### 7.5 Caminhar alguns metros melhorou a solução?
 
-Não, em nenhum dos valores testados. Em X = 200 m o sistema escolheu não caminhar (mantém o melhor P igual ao no_a_drive). Em X = 500, 800 e 1000 m o sistema testou caminhar 240 m até um P alternativo, mas o tempo total piorou em 20 % sem trânsito e 13 % com trânsito.
+Não de forma expressiva. A caminhada configura-se como um pré-requisito operacional, dado que a origem exige um deslocamento mínimo de $218$ m para alcançar a malha viária veicular. Para valores de $X$ superiores a esse limiar, a opção de caminhar até uma rampa de acesso situada a $240$ m de distância proporcionou um ganho marginal de apenas $1{,}2\%$ no tempo total em condições de tráfego ideal. Sob a incidência de tráfego sintético, contudo, a saturação observada na referida via anula essa vantagem, tornando o ponto de acesso original a alternativa mais eficiente.
 
 ### 7.6 Em quais casos caminhar atrapalhou?
 
-Em todos onde o algoritmo decidiu caminhar (X de 500 m em diante neste cenário). Os 240 m a pé equivalem a aproximadamente 173 segundos. O P alternativo encontrado economiza só 26 s no carro sem trânsito (e 17 s com trânsito). Saldo negativo em segundos: caminhar piora a viagem. O motivo de fundo é que o nó de A em `G_drive` já está sobre a via mais rápida da região (BR-101 e Avenida Senador Salgado Filho). Caminhar para um P alternativo leva o usuário a uma via secundária mais lenta, e o tempo a pé não é compensado.
+Para limiares de caminhada superiores ao acesso mínimo obrigatório de 218 m, o aumento da tolerância do sistema não resultou em reduções significativas de tempo. Esse fenômeno justifica-se pela topologia da rede: o ponto de embarque veicular mais próximo da origem já se localiza sobre o anel viário externo (BR-101 / Av. Senador Salgado Filho), que constitui o corredor de maior fluidez regional. Consequentemente, a tentativa de desviar para vias adjacentes torna-se matematicamente desvantajosa, pois o tempo adicional despendido no percurso a pé não é compensado pela eventual redução no tempo de trânsito veicular.
 
 ### 7.7 A menor distância foi também a rota mais rápida?
 
